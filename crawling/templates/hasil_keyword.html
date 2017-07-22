@@ -15,6 +15,13 @@
 <!--Icons-->
 <script src="{% static 'js/lumino.glyphs.js' %}"></script>
 
+<style type="text/css">
+	.dropdown-analisis{
+		cursor: pointer;
+	}
+}
+</style>
+
 </head>
 
 <body>
@@ -113,8 +120,26 @@
 		<form role="form" action="/crawling/save_crawling/" enctype="multipart/form-data" method="POST" id="save-form">
 		{% csrf_token %}
 
-		<button class="btn primary" type="submit" name="save_crawl"> Simpan Berita </button>			
+		<button class="btn btn-primary" type="submit" name="save_crawl"> Simpan Berita </button>			
 		</form>
+		<br>
+		<div class="dropdown">
+			<label>
+				Atau Lanjut ke Analisis :
+			</label>
+			<br>
+			<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Pilih Analisis
+				<span class="caret"></span>
+			</button>
+				<ul class="dropdown-menu">
+						<li class="dropdown-analisis"><a href="#">Preprocess</a></li>
+						<li class="dropdown-analisis"><a id="mind_map">Mind Map Generator</a></li>	
+						<li class="dropdown-analisis"><a href="#">Deep Learning Neural Network</a></li>	
+						<li class="dropdown-analisis"><a href="#">Joint Sentiment Topic</a></li>	
+						<li class="dropdown-analisis"><a href="#">Twitter Opinion Topic Model</a></li>		     
+				</ul>
+		</div>
+		<br>
 	</div>	<!--/.main-->
 	  
 
@@ -147,6 +172,11 @@
 		    $(this).append($hidden);
 		    return true;
 		});
+
+		document.getElementById('mind_map').href = "/crawling/pilih_analisis/"
+
+
+
 	</script>	
 </body>
 

@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crawling',
     'import_export',
-    'mindmap_generator'
+    'mindmap_generator',
+    'social_media_crawling',
+    'preprocess',
+    'dlnn'
 ]
 
 MIDDLEWARE = [

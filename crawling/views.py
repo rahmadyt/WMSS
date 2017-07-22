@@ -59,7 +59,10 @@ def hasil(request):
 #     return render(request, 'crawling.html', {'header':header, 'list_csv':list_csv})
 
 def word_summary(request):
-    list_selected_column = []    
+    list_berita_database = []
+    for berita in Tabel_Berita.objects.raw('SELECT * FROM crawling_Tabel_Berita'):
+        list_berita_database.append({'judul_berita':berita.judul_berita, 'konten_berita':berita.konten_berita})
+    return render(request, 'wordcloud_summary.html', {'list_berita_data':list_berita_database})   
 
 def select_column(request):
     return render(request, 'select_column.html')
@@ -87,3 +90,9 @@ def save_crawling(request):
             query = Tabel_Berita(judul_berita=judul, konten_berita=konten)
             query.save()
         return redirect('/crawling')
+
+def pilih_analisis(request):
+    list = request.GET.get('list_berita')
+    print(list)
+    return redirect('/crawling')
+

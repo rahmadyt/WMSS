@@ -1,11 +1,12 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from crawling.models import *
 from crawling.forms import *
+import json
 # Create your views here.
 
 from utils.preprocess import initialize_berita
-from utils.process import  f2_weight, f4_weight, f5_weight, predict
+from utils.process import  f2_weight, f4_weight, f5_weight, predict, transform_output
 
 def process_mindmap(request):
     if request.method == 'POST':
@@ -29,8 +30,10 @@ def process_mindmap(request):
                     )
             
             prediction = predict(process_berita, f2, f4, f5)
+            transformed_output = transform_output(berita.judul_berita, prediction)
             
-            return JsonResponse(prediction)
+            return render(request, 'mindmap.html', {'prediction': json.dumps(transformed_output)})
     else:
         return HttpResponse(4)
+    
     

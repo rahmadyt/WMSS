@@ -27,5 +27,9 @@ urlpatterns = [
     url(r'^crawling/word_summary/$', views.word_summary, name='word_summary'),
     url(r'^crawling/input_berita/$', views.input_berita, name='input_berita'),
     url(r'^mindmap/process/$', views_mindmap.process_mindmap, name='process_mindmap'),
-    url(r'^crawling/save_crawling/', views.save_crawling, name='save_crawling')
+    url(r'^crawling/save_crawling/', views.save_crawling, name='save_crawling'),
+    url(r'^crawling/pilih_analisis/', views.pilih_analisis, name='pilih_analisis'),
+    url(r'^social_media_crawling/', include('social_media_crawling.urls')),
+    url(r'^preprocess/', include('preprocess.urls'))
+#     url(r'^dlnn/', include('dlnn.urls'))
 ]

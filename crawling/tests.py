@@ -42,7 +42,7 @@ def scrap_detik_page(url):
 #     list_berita.append({'judul_berita':judul_berita, 'konten_berita':konten_berita})
 
 def scrap_detik(keyword, jumlah):
-    url = 'https://www.detik.com/search/searchall?query='+keyword+'&source=dcnav&siteid=2'
+    url = 'https://www.detik.com/search/search?query='+keyword+'&source=dcnav'
     return get_link_detik(url, jumlah, list())
 
 def get_link_detik(url, jumlah, data):
