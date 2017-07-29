@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'mindmap_generator',
     'social_media_crawling',
     'preprocess',
-    'dlnn'
+    'dlnn',
+    'django_tables2',
+    'django_tables2_reports'
 ]
 
 MIDDLEWARE = [
@@ -67,7 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.contrib.messages.context_processors.messages'
             ],
         },
     },

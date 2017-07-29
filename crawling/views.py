@@ -21,6 +21,10 @@ from pandas.tests.io.parser import skiprows
 from io import StringIO
 from builtins import int
 import json
+from crawling.tests import list_news
+from django_tables2.config import RequestConfig
+from django_tables2.export.export import TableExport
+from .tables import Berita_Tabel
 # Create your views here.
 
 # class HomePageView(TemplateView):
@@ -47,10 +51,16 @@ def crawlingView(request):
 def hasil(request):
     keyword1 = request.GET.get('keyword', '')
     jumlah1 = request.GET.get('jumlah', 5)
+    situs1 = request.GET.get('situs', '')
     jumlah1 = int(jumlah1)
-    list_news = scrap_detik(keyword1, jumlah1)
+    if situs1=='det':
+        list_news = scrap_detik(keyword1, jumlah1)
+    elif situs1 == 'kom':
+        list_news = crawl_kompas(keyword1, jumlah1)
+    elif situs1 == 'lip':
+        list_news = crawl_liputan6(keyword1, jumlah1)
     dump = json.dumps(list_news)
-    
+     
     return render(request, 'hasil_keyword.html', {'list_news':list_news, 'dump': dump})
 
 # def upload_file(request):
@@ -83,8 +93,8 @@ def input_berita(request):
 def save_crawling(request):
     if request.method=='POST':
         list_berita = request.POST.get('crawling-data')
-        list = json.loads(list_berita)
-        for row in list:
+        list1 = json.loads(list_berita)
+        for row in list1:
             judul = row['judul_berita']
             konten = row['konten_berita']
             query = Tabel_Berita(judul_berita=judul, konten_berita=konten)
@@ -92,7 +102,26 @@ def save_crawling(request):
         return redirect('/crawling')
 
 def pilih_analisis(request):
-    list = request.GET.get('list_berita')
-    print(list)
-    return redirect('/crawling')
+    if request.method=='POST':
+        list1 = request.POST.get('list-data')
+        list2 = json.loads(list1)
+        
+        print(list2)
+    return render(request, 'crawling_mindmap.html', {'list_news':list2})
+
+def data_management_view(request):
+    table = Berita_Tabel(Tabel_Berita.objects.all())
+    RequestConfig(request, paginate={'per_page':10}).configure(table)
+    export_format = request.GET.get('_export', None)
+    pks = request.GET.getlist('amend')
+    if 'delete' in request.GET:
+        sel = Tabel_Berita.objects.filter(pk__in = pks)
+        sel.delete()
+    selected = Berita_Tabel(Tabel_Berita.objects.filter(pk__in = pks))
+    if TableExport.is_valid_format(export_format):
+        exporter = TableExport(export_format, selected, exclude_columns=('amend'))
+        return exporter.response('table.{}'.format(export_format))
+    
+    
+    return render(request, 'data_management.html', {'table':table})
 

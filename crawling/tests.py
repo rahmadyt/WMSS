@@ -3,42 +3,24 @@ from django.test import TestCase
 from bs4 import BeautifulSoup
 import requests
 import urllib.request
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 
-# arai = [('nasi', 'buah', 'sayur'), ('susu', 'soya', 'kedelai')]
-# print(arai[1][0])
-# csv_file = 'C:/Users/Asus-PC/Desktop/detik_testing.csv'
-# df = pd.read_csv(csv_file)
-# data = df.as_matrix(columns=None)
-# list =[]
-# for row in data:
-#     list.append(row)
-# print(list[0][1])
-
-#     # membuat koneksi ke url 
-#     page= urllib.request.urlopen(url1)
-#     html = page.read()
-#  
-#     # membaca html
-#     soup = BeautifulSoup(html, "html.parser")
-# #======================================================================================================================
-#     # fungsi bs4
-#     test = soup.findAll(string=re.compile(keyword1, re.IGNORECASE))
-#     list_search = []
-#     for tag in test:    
-# #         query = Hasil_Pencarian_Keyword(word_result=tag)
-# #         query.save()
-#         list_search.append(tag)
-# list_berita=[]
+list_news = []
 def scrap_detik_page(url):
-    page = urllib.request.urlopen(url)
-    html = page.read()
-    soup = BeautifulSoup(html, "html.parser")
-    judul = soup.find('a',{'data-title': True})
-    judul_berita = judul['data-title']
-    konten = soup.find('div',attrs={'id':'detikdetailtext'})
-    konten_berita = konten.text.strip().splitlines()[0]
+    try:
+        page = urllib.request.urlopen(url)
+        html = page.read()
+        soup = BeautifulSoup(html, "html.parser")
+        judul = soup.find('a',{'data-title': True})
+        judul_berita = judul['data-title']
+        konten = soup.find('div',attrs={'id':'detikdetailtext'})
+        konten_berita = konten.text.strip().splitlines()[0]
 
-    return {'judul_berita': judul_berita, 'konten_berita': konten_berita}
+        return {'judul_berita': judul_berita, 'konten_berita': konten_berita}
+    except:
+        pass
 #     list_berita.append({'judul_berita':judul_berita, 'konten_berita':konten_berita})
 
 def scrap_detik(keyword, jumlah):
@@ -62,3 +44,59 @@ def get_link_detik(url, jumlah, data):
         return get_link_detik(next_page, jumlah, data)
     else:
         return data
+
+def crawl_kompas(keyword, jumlah, data = list()):
+    jum = 0
+    driver = webdriver.Chrome()
+    driver.get('http://www.kompas.com')
+    elem = driver.find_element_by_id('search')
+    elem.send_keys(keyword)
+    elem.send_keys(Keys.RETURN)
+    html = driver.page_source
+    soup_page = BeautifulSoup(html, 'html.parser')
+    tek = soup_page.findAll('a', attrs={'class':'gs-title'})
+    for row in tek:
+        berita = scrap_kompas(row['href'])
+        data.append(berita)
+        jum +=1
+        if jum == jumlah:
+                return data
+            
+def scrap_kompas(url):
+    page = urllib.request.urlopen(url)
+    html = page.read()
+    soup = BeautifulSoup(html, "html.parser")
+    judul = soup.find('h1', class_='read__title')
+    judul_berita = judul.text.strip()
+    konten = soup.find('div',attrs={'class':'read__content'})
+    konten_berita = konten.text.strip()
+    return {'judul_berita': judul_berita, 'konten_berita': konten_berita}
+
+def scrap_liputan6_page(url):
+    page = urllib.request.urlopen(url)
+    html = page.read()
+    soup = BeautifulSoup(html, "html.parser")
+    judul = soup.find('h1', class_='read-page--header--title')
+    judul_berita = judul.text.strip()
+    konten = soup.find('div',attrs={'class':'article-content-body__item-content'})
+    konten_berita = konten.text.strip()
+    return {'judul_berita': judul_berita, 'konten_berita': konten_berita}
+
+def crawl_liputan6(keyword, jumlah, data = list()):
+    jum = 0
+    driver = webdriver.Chrome()
+    driver.get('http://www.liputan6.com')
+    elem = driver.find_element_by_id('q')
+    elem.send_keys(keyword)
+    elem.send_keys(Keys.RETURN)
+    html = driver.page_source
+    soup_page = BeautifulSoup(html, 'html.parser')
+    tek = soup_page.findAll('h4', attrs={'class':'articles--iridescent-list--text-item__title'})
+    for div in tek:
+        links = div.findAll('a', attrs={'data-template-var':'url'})
+        for a in links:
+            berita = scrap_liputan6_page(a['href'])
+            data.append(berita)
+            jum +=1
+            if jum == jumlah:
+                return data

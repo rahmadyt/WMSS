@@ -132,13 +132,17 @@
 				<span class="caret"></span>
 			</button>
 				<ul class="dropdown-menu">
-						<li class="dropdown-analisis"><a href="#">Preprocess</a></li>
-						<li class="dropdown-analisis"><a id="mind_map">Mind Map Generator</a></li>	
-						<li class="dropdown-analisis"><a href="#">Deep Learning Neural Network</a></li>	
-						<li class="dropdown-analisis"><a href="#">Joint Sentiment Topic</a></li>	
-						<li class="dropdown-analisis"><a href="#">Twitter Opinion Topic Model</a></li>		     
+					<li class="dropdown-analisis"><a href="#">Preprocess</a></li>
+					<li class="dropdown-analisis"><a onclick="mindmap()">Mind Map Generator</a></li>	
+					<li class="dropdown-analisis"><a href="#">Deep Learning Neural Network</a></li>	
+					<li class="dropdown-analisis"><a href="#">Joint Sentiment Topic</a></li>	
+					<li class="dropdown-analisis"><a href="#">Twitter Opinion Topic Model</a></li>		     
 				</ul>
 		</div>
+		<form action="/crawling/pilih_analisis/" enctype="multipart/form-data" method="POST" id="pilih-analisis">
+		{% csrf_token %}
+			
+		</form>
 		<br>
 	</div>	<!--/.main-->
 	  
@@ -167,14 +171,19 @@
 
 		var dump = {{dump|safe}};
 		$('#save-form').submit(function(){
-			var $hidden = $("<input type='hidden' name='crawling-data'/>");
-		    $hidden.val(JSON.stringify(dump));
+			var hidden = $("<input type='hidden' name='crawling-data'/>");
+		    hidden.val(JSON.stringify(dump));
 		    $(this).append($hidden);
 		    return true;
 		});
 
-		document.getElementById('mind_map').href = "/crawling/pilih_analisis/"
-
+		function mindmap(){
+			var form = $('#pilih-analisis');
+			var hidden = $("<input type='hidden' name='list-data'/>");
+		    hidden.val(JSON.stringify(dump));
+		    form.append(hidden);
+		    form.submit();
+		}
 
 
 	</script>	

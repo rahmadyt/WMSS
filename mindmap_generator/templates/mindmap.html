@@ -35,6 +35,12 @@
 	  stroke: #ccc;
 	  stroke-width: 1.5px;
 	}
+	.action-button{
+		float: right;
+	}
+	.action-button button{
+		margin-left: 10px;
+	}
 </style>
 </head>
 
@@ -109,253 +115,282 @@
 	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">			
 		<div class="row">
 			<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js"></script>
-			<div id="chart"></div>
+			<div>
+				<ul class="nav nav-tabs">
+					{% for i in range %}
+				  		<li class="active"><a data-toggle="tab" href="#tab{{i}}">Artikel {{i|add:"1"}}</a></li>
+				  	{% endfor %}
+				</ul>
+				<div class="tab-content">
+					{% for i in range %}
+						<div id="tab{{i}}" class="tab-pane fade in active">
+						    <div id="chart{{i}}"></div>
+						    <div class="action-button">
+							    <button class="btn btn-primary">Verifikasi</button><button class="btn btn-primary">Update Model</button>	
+						    </div>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
 			<script>
-				var margin = {
-				    top: 30,
-				    right: 10,
-				    bottom: 10,
-				    left: 10
-				  },
-				  width = 960 - margin.left - margin.right,
-				  halfWidth = width / 2,
-				  height = 500 - margin.top - margin.bottom,
-				  i = 0,
-				  duration = 500,
-				  root;
+				var data = {{prediction|safe}};
+				var createMindmap = function(root, tag){
+					var margin = {
+					    top: 30,
+					    right: 10,
+					    bottom: 10,
+					    left: 10
+					  },
+					  width = 960 - margin.left - margin.right,
+					  halfWidth = width / 2,
+					  height = 500 - margin.top - margin.bottom,
+					  i = 0,
+					  duration = 500,
+					  root;
 
-				var getChildren = function(d) {
-				  var a = [];
-				  if (d.kiri)
-				    for (var i = 0; i < d.kiri.length; i++) {
-				      d.kiri[i].isRight = false;
-				      d.kiri[i].parent = d;
-				      a.push(d.kiri[i]);
-				    }
-				  if (d.kanan)
-				    for (var i = 0; i < d.kanan.length; i++) {
-				      d.kanan[i].isRight = true;
-				      d.kanan[i].parent = d;
-				      a.push(d.kanan[i]);
-				    }
-				  return a.length ? a : null;
-				};
+					var getChildren = function(d) {
+					  var a = [];
+					  if (d.kiri)
+					    for (var i = 0; i < d.kiri.length; i++) {
+					      d.kiri[i].isRight = false;
+					      d.kiri[i].parent = d;
+					      a.push(d.kiri[i]);
+					    }
+					  if (d.kanan)
+					    for (var i = 0; i < d.kanan.length; i++) {
+					      d.kanan[i].isRight = true;
+					      d.kanan[i].parent = d;
+					      a.push(d.kanan[i]);
+					    }
+					  return a.length ? a : null;
+					};
 
-				var tree = d3.layout.tree()
-				  .size([height, width]);
+					var tree = d3.layout.tree()
+					  .size([height, width]);
 
-				var diagonal = d3.svg.diagonal()
-				  .projection(function(d) {
-				    return [d.y, d.x];
-				  });
+					var diagonal = d3.svg.diagonal()
+					  .projection(function(d) {
+					    return [d.y, d.x];
+					  });
 
-				var connector = diagonal;
+					var connector = diagonal;
 
-				var calcLeft = function(d) {
-				  var l = d.y;
-				  if (!d.isRight) {
-				    l = d.y - halfWidth;
-				    l = halfWidth - l;
-				  }
-				  return {
-				    x: d.x,
-				    y: l
-				  };
-				};
+					var calcLeft = function(d) {
+					  var l = d.y;
+					  if (!d.isRight) {
+					    l = d.y - halfWidth;
+					    l = halfWidth - l;
+					  }
+					  return {
+					    x: d.x,
+					    y: l
+					  };
+					};
 
-				var vis = d3.select("#chart").append("svg")
-				  .attr("width", width + margin.right + margin.left)
-				  .attr("height", height + margin.top + margin.bottom)
-				  .append("g")
-				  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+					var vis = d3.select("#"+tag).append("svg")
+					  .attr("width", '100%')
+					  .attr("height", height + margin.top + margin.bottom)
+					  .call(d3.behavior.zoom().on("zoom", function () {
+					    vis.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+					  }))
+					  .append("g")
+					  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-				setTimeout(function() {
-				  var json = {{prediction|safe}}
+					setTimeout(function() {
+					  root.x0 = height / 2;
+					  root.y0 = width / 2;
 
-				  root = json;
-				  root.x0 = height / 2;
-				  root.y0 = width / 2;
+					  var t1 = d3.layout.tree().size([height, halfWidth]).children(function(d) {
+					      return d.kiri;
+					    }),
+					    t2 = d3.layout.tree().size([height, halfWidth]).children(function(d) {
+					      return d.kanan;
+					    });
+					  t1.nodes(root);
+					  t2.nodes(root);
 
-				  var t1 = d3.layout.tree().size([height, halfWidth]).children(function(d) {
-				      return d.kiri;
-				    }),
-				    t2 = d3.layout.tree().size([height, halfWidth]).children(function(d) {
-				      return d.kanan;
-				    });
-				  t1.nodes(root);
-				  t2.nodes(root);
+					  var rebuildChildren = function(node) {
+					    node.children = getChildren(node);
+					    if (node.children) node.children.forEach(rebuildChildren);
+					  }
+					  rebuildChildren(root);
+					  root.isRight = false;
+					  update(root);
+					});
 
-				  var rebuildChildren = function(node) {
-				    node.children = getChildren(node);
-				    if (node.children) node.children.forEach(rebuildChildren);
-				  }
-				  rebuildChildren(root);
-				  root.isRight = false;
-				  update(root);
-				});
+					var toArray = function(item, arr, d) {
+					  arr = arr || [];
+					  var dr = d || 1;
+					  var i = 0,
+					    l = item.children ? item.children.length : 0;
+					  arr.push(item);
+					  if (item.position && item.position === 'left') {
+					    dr = -1;
+					  }
+					  item.y = dr * item.y;
+					  for (; i < l; i++) {
+					    toArray(item.children[i], arr, dr);
+					  }
+					  return arr;
+					};
 
-				var toArray = function(item, arr, d) {
-				  arr = arr || [];
-				  var dr = d || 1;
-				  var i = 0,
-				    l = item.children ? item.children.length : 0;
-				  arr.push(item);
-				  if (item.position && item.position === 'left') {
-				    dr = -1;
-				  }
-				  item.y = dr * item.y;
-				  for (; i < l; i++) {
-				    toArray(item.children[i], arr, dr);
-				  }
-				  return arr;
-				};
+					function update(source) {
+					  // Compute the new tree layout.
+					  var nodes = toArray(source);
 
-				function update(source) {
-				  // Compute the new tree layout.
-				  var nodes = toArray(source);
+					  // Normalize for fixed-depth.
+					  nodes.forEach(function(d) {
+					    if (d.isRight) {
+					      d.y = d.depth * 180 + halfWidth;
+					    } else {
+					      d.y = width - (d.depth * 180 + halfWidth);
+					    }
 
-				  // Normalize for fixed-depth.
-				  nodes.forEach(function(d) {
-				    if (d.isRight) {
-				      d.y = d.depth * 180 + halfWidth;
-				    } else {
-				      d.y = width - (d.depth * 180 + halfWidth);
-				    }
-
-				  });
+					  });
 
 
-				  // Update the nodes…
-				  var node = vis.selectAll("g.node")
-				    .data(nodes, function(d) {
-				      return d.id || (d.id = ++i);
-				    });
+					  // Update the nodes…
+					  var node = vis.selectAll("g.node")
+					    .data(nodes, function(d) {
+					      return d.id || (d.id = ++i);
+					    });
 
-				  // Enter any new nodes at the parent's previous position.
-				  var nodeEnter = node.enter().append("g")
-				    .attr("class", "node")
-				    .attr("transform", function(d) {
-				      return "translate(" + source.y0 + "," + source.x0 + ")";
-				    })
-				    .on("click", click);
+					  // Enter any new nodes at the parent's previous position.
+					  var nodeEnter = node.enter().append("g")
+					    .attr("class", "node")
+					    .attr("transform", function(d) {
+					      return "translate(" + source.y0 + "," + source.x0 + ")";
+					    })
+					    .on("click", click);
 
-				  nodeEnter.append("circle")
-				    .attr("r", 1e-6)
-				    .style("fill", function(d) {
-				      return d._children ? "lightsteelblue" : "#fff";
-				    });
+					  nodeEnter.append("circle")
+					    .attr("r", 1e-6)
+					    .style("fill", function(d) {
+					      return d._children ? "lightsteelblue" : "#fff";
+					    });
 
-				  nodeEnter.append("text")
-				    .attr("dy", function(d) {
-				      return d.isRight ? 14 : -8;
-				    })
-				    .attr("text-anchor", "middle")
-				    .text(function(d) {
-				      return d.name;
-				    })
-				    .style("fill-opacity", 1e-6);
+					  nodeEnter.append("svg:image")
+				        .attr("href",  function(d) { return d.image;})
+				        .attr("x", function(d) { return -75;})
+				        .attr("y", function(d) { return -75;})
+				        .attr("height", 150)
+				        .attr("width", 150);
 
-				  // Transition nodes to their new position.
-				  var nodeUpdate = node.transition()
-				    .duration(duration)
-				    .attr("transform", function(d) {
-				      console.log(d);
-				      p = calcLeft(d);
-				      if (d.isRight) {
+					  nodeEnter.append("text")
+					    .attr("dy", function(d) {
+					      return d.isRight ? 14 : -8;
+					    })
+					    .attr("text-anchor", "middle")
+					    .text(function(d) {
+					      return d.name;
+					    })
+					    .style("fill-opacity", 1e-6);
 
-				        return "translate(" + p.y + "," + p.x + ")";
-				      } else {
-				        if (p.y != 470) {
-				          var temp = p.y - 470;
-				          p.y = 470 - temp;
-				          return "translate(" + p.y + "," + p.x + ")";
-				        } else {
-				          return "translate(" + p.y + "," + p.x + ")";
-				        }
-				      }
-				    });
+					  // Transition nodes to their new position.
+					  var nodeUpdate = node.transition()
+					    .duration(duration)
+					    .attr("transform", function(d) {
+					      console.log(d);
+					      p = calcLeft(d);
+					      if (d.isRight) {
 
-				  nodeUpdate.select("circle")
-				    .attr("r", 4.5)
-				    .style("fill", function(d) {
-				      return d._children ? "lightsteelblue" : "#fff";
-				    });
+					        return "translate(" + p.y + "," + p.x + ")";
+					      } else {
+					        if (p.y != 470) {
+					          var temp = p.y - 470;
+					          p.y = 470 - temp;
+					          return "translate(" + p.y + "," + p.x + ")";
+					        } else {
+					          return "translate(" + p.y + "," + p.x + ")";
+					        }
+					      }
+					    });
 
-				  nodeUpdate.select("text")
-				    .style("fill-opacity", 1);
+					  nodeUpdate.select("circle")
+					    .attr("r", 4.5)
+					    .style("fill", function(d) {
+					      return d._children ? "lightsteelblue" : "#fff";
+					    });
 
-				  // Transition exiting nodes to the parent's new position.
-				  var nodeExit = node.exit().transition()
-				    .duration(duration)
-				    .attr("transform", function(d) {
-				      p = calcLeft(d.parent || source);
-				      return "translate(" + p.y + "," + p.x + ")";
-				    })
-				    .remove();
+					  nodeUpdate.select("text")
+					    .style("fill-opacity", 1);
 
-				  nodeExit.select("circle")
-				    .attr("r", 1e-6);
+					  // Transition exiting nodes to the parent's new position.
+					  var nodeExit = node.exit().transition()
+					    .duration(duration)
+					    .attr("transform", function(d) {
+					      p = calcLeft(d.parent || source);
+					      return "translate(" + p.y + "," + p.x + ")";
+					    })
+					    .remove();
 
-				  nodeExit.select("text")
-				    .style("fill-opacity", 1e-6);
+					  nodeExit.select("circle")
+					    .attr("r", 1e-6);
 
-				  // Update the links...
-				  var link = vis.selectAll("path.link")
-				    .data(tree.links(nodes), function(d) {
-				      return d.target.id;
-				    });
+					  nodeExit.select("text")
+					    .style("fill-opacity", 1e-6);
 
-				  // Enter any new links at the parent's previous position.
-				  link.enter().insert("path", "g")
-				    .attr("class", "link")
-				    .attr("d", function(d) {
-				      var o = {
-				        x: source.x0,
-				        y: source.y0
-				      };
-				      return connector({
-				        source: o,
-				        target: o
-				      });
-				    });
+					  // Update the links...
+					  var link = vis.selectAll("path.link")
+					    .data(tree.links(nodes), function(d) {
+					      return d.target.id;
+					    });
 
-				  // Transition links to their new position.
-				  link.transition()
-				    .duration(duration)
-				    .attr("d", connector);
+					  // Enter any new links at the parent's previous position.
+					  link.enter().insert("path", "g")
+					    .attr("class", "link")
+					    .attr("d", function(d) {
+					      var o = {
+					        x: source.x0,
+					        y: source.y0
+					      };
+					      return connector({
+					        source: o,
+					        target: o
+					      });
+					    });
 
-				  // Transition exiting nodes to the parent's new position.
-				  link.exit().transition()
-				    .duration(duration)
-				    .attr("d", function(d) {
-				      var o = calcLeft(d.source || source);
-				      if (d.source.isRight) o.y -= halfWidth - (d.target.y - d.source.y);
-				      else o.y += halfWidth - (d.target.y - d.source.y);
-				      return connector({
-				        source: o,
-				        target: o
-				      });
-				    })
-				    .remove();
+					  // Transition links to their new position.
+					  link.transition()
+					    .duration(duration)
+					    .attr("d", connector);
 
-				  // Stash the old positions for transition.
-				  nodes.forEach(function(d) {
-				    var p = calcLeft(d);
-				    d.x0 = p.x;
-				    d.y0 = p.y;
-				  });
+					  // Transition exiting nodes to the parent's new position.
+					  link.exit().transition()
+					    .duration(duration)
+					    .attr("d", function(d) {
+					      var o = calcLeft(d.source || source);
+					      if (d.source.isRight) o.y -= halfWidth - (d.target.y - d.source.y);
+					      else o.y += halfWidth - (d.target.y - d.source.y);
+					      return connector({
+					        source: o,
+					        target: o
+					      });
+					    })
+					    .remove();
 
-				  // Toggle children on click.
-				  function click(d) {
-				    if (d.children) {
-				      d._children = d.children;
-				      d.children = null;
-				    } else {
-				      d.children = d._children;
-				      d._children = null;
-				    }
-				    update(source);
-				  }
+					  // Stash the old positions for transition.
+					  nodes.forEach(function(d) {
+					    var p = calcLeft(d);
+					    d.x0 = p.x;
+					    d.y0 = p.y;
+					  });
+
+					  // Toggle children on click.
+					  function click(d) {
+					    if (d.children) {
+					      d._children = d.children;
+					      d.children = null;
+					    } else {
+					      d.children = d._children;
+					      d._children = null;
+					    }
+					    update(source);
+					  }
+					}
+				}
+				for (i = 0; i < data.length; i++) {
+					createMindmap(data[i], 'chart'+i);
 				}
 			</script>
 		</div><!--/.row-->

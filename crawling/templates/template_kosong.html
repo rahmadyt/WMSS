@@ -54,7 +54,8 @@
 				
 			<li class="list-group-item" style="border:none; color:#30a5ff;"><strong> Crawling</strong></li>
 			
-			<li class="active"><a href="crawling.html"><svg class="glyph stroked camera"><use xlink:href="#stroked-camera"></use></svg>Web Crawling</a></li>
+			<li><a href="crawling.html"><svg class="glyph stroked camera"><use xlink:href="#stroked-camera"></use></svg>Web Crawling</a></li>
+			<li class="active"><a href="crawling.html"><svg class="glyph stroked camera"><use xlink:href="#stroked-camera"></use></svg>Data Management</a></li>
 			<li><a href="crawling.html"><svg class="glyph stroked camera"><use xlink:href="#stroked-camera"></use></svg>Social Media Crawling</a></li>
 			<li role="presentation" class="divider"></li>
 			<li class="list-group-item" style="border:none; color:#30a5ff;"><strong>Preprocessing</strong></li>
@@ -92,7 +93,23 @@
 		
 	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">			
 		<div class="row">
-	
+		<div class="col-sm-12">
+		<h5>Data Management</h5>
+		 	<table id="example" class="table table-striped table-bordered" cellspacing="0">
+			    <thead>
+				    <tr>
+					    <th>Judul Berita</th>
+					    <th>Konten Berita</th>
+				    </tr>
+				</thead>
+			    <tbody>					    
+				    <tr>						    						    
+				        <td>
+				        </td>						     
+				    </tr>
+				</tbody>
+			</table>
+		</div>
 		</div><!--/.row-->
 		
 		
@@ -116,10 +133,21 @@
 
 		$(window).on('resize', function () {
 		  if ($(window).width() > 768) $('#sidebar-collapse').collapse('show')
-		})
+		});
 		$(window).on('resize', function () {
 		  if ($(window).width() <= 767) $('#sidebar-collapse').collapse('hide')
-		})
+		});
+
+		$(document).ready(function() {
+	    	$('#example').dataTable({
+	    		data:[],
+	    		columns: [
+	    			{data: 'Judul_berita'},
+	    			{data: 'konten_berita'}
+	    		]
+	    		});
+	    	});
+
 	</script>	
 </body>
 

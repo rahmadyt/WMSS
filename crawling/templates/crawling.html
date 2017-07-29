@@ -49,13 +49,13 @@
 				
 			<li class="list-group-item" style="border:none; color:#30a5ff;"><strong> Crawling</strong></li>
 			
-			<li class="active"><a href="crawling.html"><svg class="glyph stroked camera"><use xlink:href="#stroked-camera"></use></svg>Web Crawling</a></li>
+			<li class="active"><a href="/crawling/"><svg class="glyph stroked camera"><use xlink:href="#stroked-camera"></use></svg>Web Crawling</a></li>
 			<li><a href="/social_media_crawling/search2/"><svg class="glyph stroked camera"><use xlink:href="#stroked-camera"></use></svg>Social Media Crawling</a></li>
+			<li><a href="/data_management/"><svg class="glyph stroked camera"><use xlink:href="#stroked-camera"></use></svg>Data Management</a></li>
 			<li role="presentation" class="divider"></li>
 			<li class="list-group-item" style="border:none; color:#30a5ff;"><strong>Preprocessing</strong></li>
 			
-			<li><a href="preprocessing.html"><svg class="glyph stroked hourglass"><use xlink:href="#stroked-hourglass"></use></svg> Stemming</a></li>
-			<li><a href="preprocessing.html"><svg class="glyph stroked hourglass"><use xlink:href="#stroked-hourglass"></use></svg> Stocking</a></li>
+			<li><a href="/preprocess/"><svg class="glyph stroked hourglass"><use xlink:href="#stroked-hourglass"></use></svg> Stemming</a></li>
 			<li role="presentation" class="divider"></li>
 			<li class="parent">
 				<a href="#">
@@ -69,12 +69,17 @@
 					</li>
 					<li>
 						<a class="" href="#">
-							<svg class="glyph stroked chevron-right"><use xlink:href="#stroked-chevron-right"></use></svg> SVM
+							<svg class="glyph stroked chevron-right"><use xlink:href="#stroked-chevron-right"></use></svg> DLNN
+						</a>
+					</li>
+					<li>
+						<a class="" href="/mindmap/process/">
+							<svg class="glyph stroked chevron-right"><use xlink:href="#stroked-chevron-right"></use></svg> Mind Map Generator
 						</a>
 					</li>
 					<li>
 						<a class="" href="#">
-							<svg class="glyph stroked chevron-right"><use xlink:href="#stroked-chevron-right"></use></svg> Mind Map Generator
+							<svg class="glyph stroked chevron-right"><use xlink:href="#stroked-chevron-right"></use></svg> Joint Sentiment Topic
 						</a>
 					</li>
 				</ul>
@@ -88,7 +93,7 @@
 	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">		
 		<div class="row">
 			<ol class="breadcrumb">
-				<li><a href="#"><svg class="glyph stroked home"><use xlink:href="#stroked-home"></use></svg></a></li>
+				<li><a href=""><svg class="glyph stroked home"><use xlink:href="#stroked-home"></use></svg></a></li>
 				<li class="active">Crawling</li>
 			</ol>
 		</div><!--/.row-->
@@ -121,9 +126,11 @@
 		
 						<div class="tab-content">
 							<div class="tab-pane fade in active" id="tab1">
-								<h4>Crawling Keyword Detik</h4>
+								<h4>Crawling Keyword</h4>
 								<form role="form" action="/crawling/hasil_keyword/" method="GET">
-								
+
+									<h6>Situs Berita</h6>
+									{{form_crawling_berita.situs}}
 									<h6>Keyword</h6>
 									{{form_crawling_berita.keyword}}
 									<h6>Jumlah Berita</h6>
