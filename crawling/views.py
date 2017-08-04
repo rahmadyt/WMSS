@@ -21,10 +21,11 @@ from pandas.tests.io.parser import skiprows
 from io import StringIO
 from builtins import int
 import json
-from crawling.tests import list_news
 from django_tables2.config import RequestConfig
 from django_tables2.export.export import TableExport
 from .tables import Berita_Tabel
+from django.contrib import messages
+from django.http import JsonResponse
 # Create your views here.
 
 # class HomePageView(TemplateView):
@@ -71,11 +72,8 @@ def hasil(request):
 def word_summary(request):
     list_berita_database = []
     for berita in Tabel_Berita.objects.raw('SELECT * FROM crawling_Tabel_Berita'):
-        list_berita_database.append({'judul_berita':berita.judul_berita, 'konten_berita':berita.konten_berita})
+        list_berita_database.append({'judul_berita':berita.judul_berita, 'konten_berita':berita.konten_berita, 'id_berita':berita.id_berita})
     return render(request, 'wordcloud_summary.html', {'list_berita_data':list_berita_database})   
-
-def select_column(request):
-    return render(request, 'select_column.html')
 
 def input_berita(request):
     if request.method=='POST':
@@ -92,22 +90,30 @@ def input_berita(request):
 
 def save_crawling(request):
     if request.method=='POST':
-        list_berita = request.POST.get('crawling-data')
-        list1 = json.loads(list_berita)
+        listed = request.POST.get('crawling-data')
+        list1 = json.loads(listed)
         for row in list1:
             judul = row['judul_berita']
             konten = row['konten_berita']
             query = Tabel_Berita(judul_berita=judul, konten_berita=konten)
             query.save()
+        messages.success(request, 'Berhasil Tersimpan!')
         return redirect('/crawling')
 
 def pilih_analisis(request):
     if request.method=='POST':
-        list1 = request.POST.get('list-data')
-        list2 = json.loads(list1)
-        
-        print(list2)
-    return render(request, 'crawling_mindmap.html', {'list_news':list2})
+        if 'list-data-mindmap' in request.POST:
+            list1 = request.POST.get('list-data-mindmap')
+            list2 = json.loads(list1)        
+            print(list2)
+            return render(request, 'crawling_mindmap.html', {'list_news1':list2})
+        elif 'list-data-preprocess' in request.POST:
+            list_prep = request.POST.get('list-data-preprocess')
+            list_prep1 = json.loads(list_prep)            
+            print(list_prep1)
+            return render(request, 'crawling_preprocess.html', {'list_news1':list_prep1})
+    else:
+        return render(request, 'crawling.html')
 
 def data_management_view(request):
     table = Berita_Tabel(Tabel_Berita.objects.all())
@@ -125,3 +131,7 @@ def data_management_view(request):
     
     return render(request, 'data_management.html', {'table':table})
 
+def get_berita(request):
+    id = request.GET.get('id')
+    berita = Tabel_Berita.objects.filter(id_berita=id)[0]
+    return JsonResponse({'konten': berita.konten_berita})

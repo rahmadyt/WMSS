@@ -61,6 +61,7 @@ def crawl_kompas(keyword, jumlah, data = list()):
         jum +=1
         if jum == jumlah:
                 return data
+    driver.quit()
             
 def scrap_kompas(url):
     page = urllib.request.urlopen(url)
@@ -100,3 +101,4 @@ def crawl_liputan6(keyword, jumlah, data = list()):
             jum +=1
             if jum == jumlah:
                 return data
+    driver.quit()

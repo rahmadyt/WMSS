@@ -1,35 +1,60 @@
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<div class = "row">
-	<div class = "col-md-6">
-		<form method ="POST"> {% csrf_token %}
-		<h4>Metode : </h4>
-		<select name="PR">
-		{% for a in data %}
-			<option value ={{a}}> {{a}}</option>
-		{% endfor %}
-		</select>
-		<br>
-		<textarea name="inputtext" rows="6" cols="40">
-		</textarea>
-		<input type = "submit" value="ok" name="inputA">
-		</form>
-	</div>
-	<div class  = "col-md-6">
-		<h4>Hasil </h4>
-		{{text}}
-	</div>
-</div>
+<!DOCTYPE html>
+<html>
+<head>
+{% extends 'base.html' %}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %} WMSS - Preprocess {% endblock %}</title>
 
-<div class = "row">
-	<div class = "col-md-6">
-		<form method ="POST"> {% csrf_token %}
-		<input type = "submit" value="process" name = "inputB">
-		</form>
-	</div>
-	<div class = "col-md-6">
-		<h4>Hasil</h4>
-		{% for a in text1 %}
-		<h5>{{a}}</h5>
-		{% endfor %}
-	</div>
-</div>
+{% load staticfiles %}
+{% block css %}
+<script src="{% static 'js/diff_match_patch_uncompressed.js' %}"></script>
+{% endblock %}
+</head>
+
+<body>		
+	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">			
+	{% block content %}
+		<div class="row">
+			<div class="col-md-6">
+				<form method ="POST">
+					{% csrf_token %}
+					<h4>Metode : </h4>
+					<select class="form-control" name="PR">
+					{% for a in data %}
+						<option value ={{a}}> {{a}}</option>
+					{% endfor %}
+					</select>
+					<br>
+					<textarea class="form-control" name="inputtext" rows="6" cols="40">{{input}}</textarea>
+					<input class="btn" type="submit" value="ok" name="inputA">
+				</form>
+			</div>
+			<div class="col-md-6">
+				<h4>Hasil : </h4>
+				<div id="hasil">
+					<!-- <h4>{{hasil}}</h4> -->
+					</div>
+			</div>
+		</div><!--/.row-->
+		
+		{% endblock %}
+	</div>	<!--/.main-->
+	<script>
+	{% block js %}
+	var sidebar = document.getElementById('formalisasi');
+	sidebar.setAttribute('class', 'active');
+		{% if hasil != '' %}
+			var diff = new diff_match_patch(); // options may be passed to constructor; see below
+			var before = '{{input}}'
+			var after = '{{hasil}}'
+			var textDiff = diff.diff_main(before, after); // produces diff array 
+			diff.diff_cleanupSemantic(textDiff);
+			var diffTag = diff.diff_prettyHtml(textDiff);
+			document.getElementById('hasil').innerHTML = diffTag;
+		{% endif %}
+	{% endblock %}
+	</script>
+</body>
+
+</html>

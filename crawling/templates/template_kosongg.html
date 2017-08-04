@@ -54,30 +54,29 @@
 				
 			<li class="list-group-item" style="border:none; color:#30a5ff;"><strong> Crawling</strong></li>
 			
-			<li class="active"><a href="crawling.html"><svg class="glyph stroked camera"><use xlink:href="#stroked-camera"></use></svg>Web Crawling</a></li>
-			<li><a href="crawling.html"><svg class="glyph stroked camera"><use xlink:href="#stroked-camera"></use></svg>Social Media Crawling</a></li>
+			<li id='crawling'><a href="crawling.html"><svg class="glyph stroked camera"><use xlink:href="#stroked-camera"></use></svg>Web Crawling</a></li>
+			<li id='socmed_crawling'><a href="crawling.html"><svg class="glyph stroked camera"><use xlink:href="#stroked-camera"></use></svg>Social Media Crawling</a></li>
 			<li role="presentation" class="divider"></li>
 			<li class="list-group-item" style="border:none; color:#30a5ff;"><strong>Preprocessing</strong></li>
 			
-			<li><a href="preprocessing.html"><svg class="glyph stroked hourglass"><use xlink:href="#stroked-hourglass"></use></svg> Stemming</a></li>
-			<li><a href="preprocessing.html"><svg class="glyph stroked hourglass"><use xlink:href="#stroked-hourglass"></use></svg> Stocking</a></li>
+			<li id='formalisasi'><a href="preprocessing.html"><svg class="glyph stroked hourglass"><use xlink:href="#stroked-hourglass"></use></svg> Formalisasi</a></li>
 			<li role="presentation" class="divider"></li>
 			<li class="parent">
 				<a href="#">
 					<span data-toggle="collapse" href="#sub-item-1"><svg class="glyph stroked line-graph"><use xlink:href="#stroked-line-graph"></use></svg> Analysis </span>
 				</a>
 				<ul class="children collapse" id="sub-item-1">
-					<li>
+					<li id='summarizer_lda'>
 						<a class="" href="#">
-							<svg class="glyph stroked chevron-right"><use xlink:href="#stroked-chevron-right"></use></svg> TOTM
+							<svg class="glyph stroked chevron-right"><use xlink:href="#stroked-chevron-right"></use></svg> Summarizer LDA
 						</a>
 					</li>
-					<li>
+					<li id='dlnn'>
 						<a class="" href="#">
-							<svg class="glyph stroked chevron-right"><use xlink:href="#stroked-chevron-right"></use></svg> SVM
+							<svg class="glyph stroked chevron-right"><use xlink:href="#stroked-chevron-right"></use></svg> DLNN
 						</a>
 					</li>
-					<li>
+					<li id='mindmap'>
 						<a class="" href="#">
 							<svg class="glyph stroked chevron-right"><use xlink:href="#stroked-chevron-right"></use></svg> Mind Map Generator
 						</a>
@@ -91,9 +90,8 @@
 	</div><!--/.sidebar-->
 		
 	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">			
-		<div class="row">
-	
-		</div><!--/.row-->
+	{% block content %}
+	{% endblock %}
 		
 		
 	</div>	<!--/.main-->
@@ -101,12 +99,9 @@
 
 	<script src="{% static 'js/jquery-1.11.1.min.js' %}"></script>
 	<script src="{% static 'js/bootstrap.min.js' %}"></script>
-	<script src="js/chart.min.js"></script>
-	<script src="js/chart-data.js"></script>
-	<script src="js/easypiechart.js"></script>
-	<script src="js/easypiechart-data.js"></script>
-	<script src="js/bootstrap-datepicker.js"></script>
 	<script>
+	
+	
 		!function ($) {
 		    $(document).on("click","ul.nav li.parent > a > span.icon", function(){          
 		        $(this).find('em:first').toggleClass("glyphicon-minus");      
@@ -120,6 +115,8 @@
 		$(window).on('resize', function () {
 		  if ($(window).width() <= 767) $('#sidebar-collapse').collapse('hide')
 		})
+	{% block js %}
+	{% endblock %}
 	</script>	
 </body>
 

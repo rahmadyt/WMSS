@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>WMSS - Word Summary</title>
+<title>WMSS - Preprocess</title>
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block css %}
@@ -24,12 +24,12 @@
 {% endblock %}
 </head>
 
-<body>				
+<body>		
 	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">			
 	{% block content %}
 		<div class="row">
 		{% for row in list_news1 %}
-		<form action="/mindmap/process1/" enctype="multipart/form-data" method="POST">
+		<form action="/preprocess/hasil/" enctype="multipart/form-data" method="POST">
 		{% csrf_token %}
 		<input type="hidden" value="{{row.judul_berita}}" name="judul_berita">
 		<input type="hidden" value="{{row.konten_berita}}" name="konten_berita">
@@ -37,17 +37,17 @@
 		{{ row.judul_berita }}
 		<h6>Konten Berita :</h6>
 		{{ row.konten_berita }}<br>	
-		<button type="submit" class="btn btn-primary" id="button_mindmap">Tampilkan Mind Map</button>
+		<button type="submit" class="btn btn-primary" id="button_preprocess">lihat preprocess</button>
 		</form>
 		<hr>
 		{% endfor %}
 		</div><!--/.row-->		
-	{% endblock %}
+		{% endblock %}
 	</div>	<!--/.main-->
-		<script>
-		{% block js %}
-	$(document).ready(function(){
-		$('#button_mindmap').click(function(){
+	<script>
+	{% block js %}
+$(document).ready(function(){
+		$('#button_preprocess').click(function(){
 			$.blockUI({ 
 				message: '<img src="http://nahars.com/wp-content/uploads/2016/10/blue-circles-loading-animation-large.gif" />',
     			css: {
@@ -59,10 +59,10 @@
        		setTimeout($.unblockUI, 600000);
 		});
 	});	
-		var sidebar = document.getElementById('mindmap');
+
+	var sidebar = document.getElementById('preprocess');
 	sidebar.setAttribute('class', 'active');
-		
-		{% endblock %}
+	{% endblock %}	
 	</script>	
 </body>
 

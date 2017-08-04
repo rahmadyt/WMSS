@@ -4,20 +4,22 @@ Created on 14 Jul 2017
 @author: USER
 '''
 #Cek typo per kata - ED + Bayes
+#Cek typo per kata - ED + Bayes
 import re
-import os
+import glob
 from collections import Counter
-import sqlite3
-
 
 def words(text): return re.findall(r'\w+', text.lower())
-# path = 'C:/Users/USER/Desktop/Parallel Corpus'
+path = 'E:/Projek/WMSS/preprocess/corpus/*.txt'
 
-# for filename in os.listdir(path):
-BASE_DIR = os.path.dirname((__file__))
-file = os.path.join(BASE_DIR, 'big.txt')
-file = open(file, "r", encoding="utf-8-sig") #jgn lupa corpus di bikin lower text; buat fungsi
-WORDS = Counter(file.read().split())
+# def words(text): return re.findall(r'\w+', text.lower())
+# file = open(r"C:\Users\USER\Desktop\big.txt", "r", encoding="utf-8-sig") #jgn lupa corpus di bikin lower text; buat fungsi
+file = glob.glob(path)
+for files in file:
+    infile = open(files)
+    a = infile.read().split()
+    
+WORDS = Counter(a)
 
 def rules(word):
     pjg = len(word)
@@ -94,8 +96,31 @@ def correction_3(lines): #untuk kalimat Rule, ED + Bayes
                 hasil.append(word)
         return ' '.join(hasil)           
     
-def bigram_corr5(tweet):
-       
+def bigram_corr5(): #untuk file sqlite
+    import sqlite3
+
+    f = sqlite3.connect("C:/Users/USER/Desktop/Tingkat 4/Skripsi/final.sqlite")
+    cursor = f.cursor()
+
+    #create table
+    #cursor.execute('''CREATE TABLE TWEETS
+    #(ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    #NAME           TEXT    NOT NULL,
+    #TWEET          TEXT    NOT NULL);''')
+
+    #read
+    a = cursor.execute("SELECT TWEET from TWEETS")
+    tweet = []
+    for row in a:
+#     print(row)
+        tweet.append(row[0])
+#     hasil=[]
+    #delete
+    #a= cursor.execute("DELETE from TWEETS")
+    #f.commit()
+    f.close()
+    
+   
     hasil=[]
 #     print(tweet)
     for line in tweet:
@@ -103,8 +128,46 @@ def bigram_corr5(tweet):
     return hasil
 #     return ' '.join(hasil)
 
+def database():
+    import sqlite3
 
-# print(correction_3('jasaa menyebutka terdaka juga memperkayaa'))
+    f = sqlite3.connect("C:/Users/USER/Desktop/Tingkat 4/Skripsi/final.sqlite")
+    cursor = f.cursor()
+
+    #create table
+    #cursor.execute('''CREATE TABLE TWEETS
+    #(ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    #NAME           TEXT    NOT NULL,
+    #TWEET          TEXT    NOT NULL);''')
+
+    #read
+    a = cursor.execute("SELECT TWEET from TWEETS")
+    tweet = []
+    for row in a:
+#     print(row)
+        tweet.append(row[0])
+#     hasil=[]
+    #delete
+    #a= cursor.execute("DELETE from TWEETS")
+    #f.commit()
+    f.close()
+    
+
+def bigram_corr6(): #untuk file csv
+    import csv
+
+    with open("C:/Users/USER/Desktop/Tingkat 4/Skripsi/TWEETS2.csv", encoding = "utf8") as csvfile:
+        reader = csv.reader(csvfile, delimiter=";")
+        hasil=[]
+        for row in reader:
+            hasil.append(correction_3(row[2]))
+        return hasil
+
+# CRED = '\033[91m'
+# CEND = '\033[0m'
+# for a in bigram_corr5():
+#     print colorize(a, fg="red")
+# print(correction_3('jasaa menyebutka terdaka jugaa memperkayaa'))
 # print(correction_2('jasaa menyebutka terdaka juga memperkayaa'))
 # candidates('Kementriann')
 # print(WORDS)

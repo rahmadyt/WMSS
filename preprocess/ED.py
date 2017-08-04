@@ -5,13 +5,21 @@ Created on 14 Jul 2017
 '''
 #Cek typo per kata - ED + Bayes
 #Cek typo per kata - ED + Bayes
+#Cek typo per kata - ED + Bayes
 import re
+import glob
 from collections import Counter
 
-def words(text): return re.findall(r'\w+', text.lower())
-file = open(r"C:\Users\USER\Desktop\big.txt", "r", encoding="utf-8-sig") #jgn lupa corpus di bikin lower text; buat fungsi
+path = 'C:/Users/USER/Desktop/Parallel Corpus/*.txt'
 
-WORDS = Counter(file.read().split())
+def words(text): return re.findall(r'\w+', text.lower())
+# file = open(r"C:\Users\USER\Desktop\big.txt", "r", encoding="utf-8-sig") #jgn lupa corpus di bikin lower text; buat fungsi
+file = glob.glob(path)
+for files in file:
+    infile = open(files)
+    a = infile.read().split()
+    
+WORDS = Counter(a)
 
 def P(word, N=sum(WORDS.values())):  
     "Probability of `word`."
@@ -52,7 +60,7 @@ def correction_2(lines): #untuk kalimat
             hasil.append(correction(word))
         return ' '.join(hasil)
     
-def bigram_corr4():
+def bigram_corr4(): #untuk file sqlite
     import sqlite3
 
     f = sqlite3.connect("C:/Users/USER/Desktop/Tingkat 4/Skripsi/Test.sqlite")
@@ -83,7 +91,20 @@ def bigram_corr4():
 #     return ' '.join(hasil)
     return hasil
 
-for a in bigram_corr4():
+# for a in bigram_corr4():
+#     print(a)
+
+def bigram_corr5(): #untuk file csv
+    import csv
+
+    with open("C:/Users/USER/Desktop/Tingkat 4/Skripsi/TWEETS2.csv", encoding = "utf8") as csvfile:
+        reader = csv.reader(csvfile, delimiter=";")
+        hasil=[]
+        for row in reader:
+            hasil.append(correction_2(row[2]))
+        return hasil
+
+for a in bigram_corr5():
     print(a)
 # correction_2('sejumlahad namaa besar kamu')
 # candidates('Kementriann')
